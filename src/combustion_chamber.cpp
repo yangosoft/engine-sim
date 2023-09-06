@@ -11,6 +11,8 @@
 
 #include <cmath>
 
+static GasSystem::Mix mix;
+
 CombustionChamber::CombustionChamber() {
     m_crankcasePressure = 0.0;
     m_piston = nullptr;
@@ -45,9 +47,9 @@ CombustionChamber::~CombustionChamber() {
 }
 
 void CombustionChamber::initialize(const Parameters &params) {
-    m_piston = params.Piston;
+    m_piston = params.piston;
     m_head = params.Head;
-    m_fuel = params.Fuel;
+    m_fuel = params.fuel;
     m_crankcasePressure = params.CrankcasePressure;
     m_meanPistonSpeedToTurbulence = params.MeanPistonSpeedToTurbulence;
 
@@ -84,7 +86,8 @@ void CombustionChamber::initialize(const Parameters &params) {
     m_intakeRunnerAndManifold.initialize(
         units::pressure(1.0, units::atm),
         totalIntakeRunnerVolume,
-        units::celcius(25.0));
+        units::celcius(25.0),
+        mix);
     m_intakeRunnerAndManifold.setGeometry(
         overallIntakeRunnerLength,
         intakeRunnerWidth,
@@ -101,7 +104,8 @@ void CombustionChamber::initialize(const Parameters &params) {
     m_exhaustRunnerAndPrimary.initialize(
         units::pressure(1.0, units::atm),
         totalExhaustRunnerVolume,
-        units::celcius(25.0));
+        units::celcius(25.0),
+        mix);
     m_exhaustRunnerAndPrimary.setGeometry(
         overallExhaustRunnerLength,
         exhaustRunnerWidth,
@@ -246,7 +250,7 @@ void CombustionChamber::flow(double dt) {
     const double dT = units::celcius(90.0) - m_system.temperature();
 
     m_system.changeEnergy(dT * cylinderSurfaceArea * 100 * dt);
-    m_system.flow(m_piston->getBlowbyK(), dt, m_crankcasePressure, units::celcius(25.0));
+    m_system.flow(m_piston->getBlowbyK(), dt, m_crankcasePressure, units::celcius(25.0), mix);
 
     Intake *intake = m_head->getIntake(m_piston->getCylinderIndex());
     ExhaustSystem *exhaust = m_head->getExhaustSystem(m_piston->getCylinderIndex());

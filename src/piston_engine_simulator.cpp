@@ -8,6 +8,8 @@
 #include <chrono>
 #include <set>
 
+static GasSystem::Mix mix;
+
 PistonEngineSimulator::PistonEngineSimulator() {
     m_engine = nullptr;
     m_transmission = nullptr;
@@ -33,7 +35,7 @@ PistonEngineSimulator::~PistonEngineSimulator() {
     assert(m_crankshaftFrictionConstraints == nullptr);
     assert(m_exhaustFlowStagingBuffer == nullptr);
     assert(m_delayFilters == nullptr);
-    assert(m_antialiasingFilters == nullptr);
+    
 }
 
 void PistonEngineSimulator::loadSimulation(Engine *engine, Vehicle *vehicle, Transmission *transmission) {
@@ -212,7 +214,8 @@ void PistonEngineSimulator::placeAndInitialize() {
         m_engine->getChamber(i)->m_system.initialize(
             units::pressure(1.0, units::atm),
             m_engine->getChamber(i)->getVolume(),
-            units::celcius(25.0)
+            units::celcius(25.0),
+            mix
         );
 
         Piston *piston = m_engine->getChamber(i)->getPiston();

@@ -4,6 +4,8 @@
 
 #include <cmath>
 
+static GasSystem::Mix mix;
+
 Intake::Intake() {
     m_inputFlowK = 0;
     m_idleFlowK = 0;
@@ -26,7 +28,8 @@ void Intake::initialize(Parameters &params) {
     m_system.initialize(
         units::pressure(1.0, units::atm),
         params.volume,
-        units::celcius(25.0));
+        units::celcius(25.0),
+        mix);
     m_system.setGeometry(
         width,
         params.volume / params.CrossSectionArea,
@@ -36,7 +39,8 @@ void Intake::initialize(Parameters &params) {
     m_atmosphere.initialize(
         units::pressure(1.0, units::atm),
         units::volume(1000.0, units::m3),
-        units::celcius(25.0));
+        units::celcius(25.0),
+        mix);
     m_atmosphere.setGeometry(
         units::distance(100.0, units::m),
         units::distance(100.0, units::m),
